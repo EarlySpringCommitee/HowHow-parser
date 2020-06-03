@@ -9,6 +9,7 @@ async function main() {
     for (let [pinyin, startTime, endTime] of (await readCSVData('./original/HowHow 發音標註眾包 - 發音表.csv'))) {
         res.push({ pinyin, startTime, endTime })
     }
+    res.shift();
     console.log('csv 檔案解析完成')
     //create folder
     function rmdir(d) {
