@@ -6,17 +6,16 @@ const readCSVData = async filePath => (await getStream.array(fs.createReadStream
 
 async function main() {
     let res = []
-    for (let [id, pinyin, verified, startTime, endTime] of (await readCSVData('./original/HowHow 發音標註眾包 - 發音表.csv'))) {
-        id = Number(id)
-        res.push({ id, pinyin, verified: verified == 'v', startTime, endTime })
+    for (let [pinyin, startTime, endTime] of (await readCSVData('./original/HowHow 發音標註眾包 - 發音表.csv'))) {
+        res.push({ pinyin, startTime, endTime })
     }
     console.log('csv 檔案解析完成')
     //create folder
     function rmdir(d) {
-        var self = arguments.callee
+        let self = arguments.callee
         if (fs.existsSync(d)) {
-            fs.readdirSync(d).forEach(function (file) {
-                var C = d + '/' + file
+            fs.readdirSync(d).forEach(file => {
+                let C = d + '/' + file
                 if (fs.statSync(C).isDirectory()) self(C)
                 else fs.unlinkSync(C)
             })
@@ -41,6 +40,7 @@ async function main() {
         ffmpeg('./original/howhow.mp3')
             .setStartTime(startTime)
             .setDuration(endTime - startTime)
+            //.output(`./result/mp3/${1}/${id}-${pinyin}.mp3`)
             .output(`./result/mp3/${counter % 5 + 1}/${pinyin}.mp3`)
             .on('error', err => console.log('error: ', pinyin, err))
             .run();
