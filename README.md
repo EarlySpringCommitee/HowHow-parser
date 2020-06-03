@@ -8,3 +8,6 @@ node index.js # 可能會跑很久很久
 ```
 ## 發音修正
 請修改 Repo 裡的 `original/HowHow 發音標註眾包 - 發音表.csv`
+
+## 下載發音集
+[https://github.com/EarlySpringCommitee/HowHow-parser/archive/master.zip](https://github.com/EarlySpringCommitee/HowHow-parser/archive/master.zip)
