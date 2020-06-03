@@ -1,0 +1,27 @@
+{
+  "name": "howhow-parser",
+  "version": "1.0.0",
+  "description": "HowHow 影片處理器，協助分割每個發音",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/EarlySpringCommitee/HowHow-parser.git"
+  },
+  "keywords": [
+    "HowHow"
+  ],
+  "author": "gnehs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/EarlySpringCommitee/HowHow-parser/issues"
+  },
+  "homepage": "https://github.com/EarlySpringCommitee/HowHow-parser#readme",
+  "dependencies": {
+    "csv": "^5.3.2",
+    "fluent-ffmpeg": "^2.1.2",
+    "get-stream": "^5.1.0"
+  }
+}
