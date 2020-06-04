@@ -7,6 +7,9 @@ const readCSVData = async filePath => (await getStream.array(fs.createReadStream
 async function main() {
     let res = []
     for (let [pinyin, startTime, endTime] of (await readCSVData('./original/HowHow 發音標註眾包 - 發音表.csv'))) {
+        // startTime = parseFloat(startTime) + 0.1
+        //  endTime = parseFloat(endTime) - 0.1
+        pinyin = pinyin == '' ? `沒有拼音 - ${Math.random().toString(36).substring(7)}` : pinyin
         res.push({ pinyin, startTime, endTime })
     }
     res.shift();
@@ -28,7 +31,7 @@ async function main() {
         fs.mkdirSync(folder);
         for (let folder2 of ['/mp3/', '/mp4/']) {
             fs.mkdirSync(folder + folder2);
-            for (let folder3 of [1, 2, 3, 4, 5]) {
+            for (let folder3 of [1, 2]) {
                 fs.mkdirSync(folder + folder2 + folder3);
             }
         }
@@ -42,7 +45,7 @@ async function main() {
             .setStartTime(startTime)
             .setDuration(endTime - startTime)
             //.output(`./result/mp3/${1}/${id}-${pinyin}.mp3`)
-            .output(`./result/mp3/${counter % 5 + 1}/${pinyin}.mp3`)
+            .output(`./result/mp3/${Math.ceil(counter / 1000)}/${pinyin}.mp3`)
             .on('error', err => console.log('error: ', pinyin, err))
             .run();
     }
@@ -52,7 +55,7 @@ async function main() {
         ffmpeg('./original/howhow.mp4')
             .setStartTime(startTime)
             .setDuration(endTime - startTime)
-            .output(`./result/mp4/${counter % 5 + 1}/${pinyin}.mp4`)
+            .output(`./result/mp4/${Math.ceil(counter / 1000)}/${pinyin}.mp4`)
             .on('error', err => console.log('error: ', pinyin, err))
             .run();
     }
