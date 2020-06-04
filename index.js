@@ -7,8 +7,8 @@ const readCSVData = async filePath => (await getStream.array(fs.createReadStream
 async function main() {
     let res = []
     for (let [pinyin, startTime, endTime] of (await readCSVData('./original/HowHow 發音標註眾包 - 發音表.csv'))) {
-        // startTime = parseFloat(startTime) + 0.1
-        //  endTime = parseFloat(endTime) - 0.1
+        startTime = parseFloat(startTime) + 0.1
+        endTime = parseFloat(endTime) - 0.1
         pinyin = pinyin == '' ? `沒有拼音 - ${Math.random().toString(36).substring(7)}` : pinyin
         if (pinyin.length > 30)
             pinyin = pinyin.slice(0, 30)
