@@ -11,3 +11,11 @@ node index.js # 可能會跑很久很久
 
 ## 下載發音集
 [https://github.com/EarlySpringCommitee/HowHow-parser/archive/master.zip](https://github.com/EarlySpringCommitee/HowHow-parser/archive/master.zip)
+
+## 發音表貢獻者
+-   [勝勝](https://gnehs.net/)
+-   [koru](https://koru.me/)
+-   [踢低吸](https://tdccc.com.tw/)
+-   [Sciuridae](https://sciuridae.me/)
+-   [Bill](https://github.com/bill96012)
+-   [石頭](https://t510599.github.io/)
