@@ -10,6 +10,8 @@ async function main() {
         // startTime = parseFloat(startTime) + 0.1
         //  endTime = parseFloat(endTime) - 0.1
         pinyin = pinyin == '' ? `沒有拼音 - ${Math.random().toString(36).substring(7)}` : pinyin
+        if (pinyin.length > 30)
+            pinyin = pinyin.slice(0, 30)
         res.push({ pinyin, startTime, endTime })
     }
     res.shift();
