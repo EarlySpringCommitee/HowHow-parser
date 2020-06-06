@@ -49,15 +49,12 @@ async function main() {
         ffmpeg('./original/howhow.mp3')
             .setStartTime(startTime)
             .setDuration(endTime - startTime)
-            .on('progress', (progress) => {
-                console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
-            })
             .on('error', (err) => {
                 console.error(`[ffmpeg] error: ${err.message}`);
                 reject(err);
             })
             .on('end', () => {
-                console.log(`[ffmpeg] ${pinyin}.mp3 finished`);
+                console.log(`(${counter} of ${res.length}) [ffmpeg] ${pinyin}.mp3 finished`);
                 resolve();
             })
             .save(`./result/mp3/${Math.ceil(counter / 1000)}/${pinyin}.mp3`)
@@ -81,7 +78,7 @@ async function main() {
                 reject(err);
             })
             .on('end', () => {
-                console.log(`[ffmpeg] ${pinyin}.mp4 finished`);
+                console.log(`(${counter} of ${res.length}) [ffmpeg] ${pinyin}.mp4 finished`);
                 resolve();
             })
             .save(`./result/mp4/${Math.ceil(counter / 1000)}/${pinyin}.mp4`)
