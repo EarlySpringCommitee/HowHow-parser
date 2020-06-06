@@ -1,3 +1,5 @@
+const asyncPool = require('tiny-async-pool');
+const poolLimit = 8;
 const ffmpeg = require('fluent-ffmpeg');
 const fs = require('fs')
 const parse = require('csv-parse')
@@ -40,71 +42,84 @@ async function main() {
     }
     console.log('ffmpeg 處理中...')
     let counter
-    counter = 0
-    for (let { pinyin, startTime, endTime } of res) {
-        counter++
 
-        await new Promise((resolve, reject) => {
-            ffmpeg('./original/howhow.mp3')
-                .setStartTime(startTime)
-                .setDuration(endTime - startTime)
-                .on('progress', (progress) => {
-                    console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
-                })
-                .on('error', (err) => {
-                    console.error(`[ffmpeg] error: ${err.message}`);
-                    reject(err);
-                })
-                .on('end', () => {
-                    console.log(`[ffmpeg] ${pinyin}.mp3 finished`);
-                    resolve();
-                })
-                .save(`./result/mp3/${Math.ceil(counter / 1000)}/${pinyin}.mp3`)
-        });
-    }
+
     counter = 0
+    let parseMp3 = ({ pinyin, startTime, endTime }) => new Promise((resolve, reject) => {
+        ffmpeg('./original/howhow.mp3')
+            .setStartTime(startTime)
+            .setDuration(endTime - startTime)
+            .on('progress', (progress) => {
+                console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
+            })
+            .on('error', (err) => {
+                console.error(`[ffmpeg] error: ${err.message}`);
+                reject(err);
+            })
+            .on('end', () => {
+                console.log(`[ffmpeg] ${pinyin}.mp3 finished`);
+                resolve();
+            })
+            .save(`./result/mp3/${Math.ceil(counter / 1000)}/${pinyin}.mp3`)
+    });
+    let pool_mp3 = []
     for (let { pinyin, startTime, endTime } of res) {
         counter++
-        await new Promise((resolve, reject) => {
-            ffmpeg('./original/howhow.mp4')
-                .setStartTime(startTime)
-                .setDuration(endTime - startTime)
-                .on('progress', (progress) => {
-                    console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
-                })
-                .on('error', (err) => {
-                    console.error(`[ffmpeg] error: ${err.message}`);
-                    reject(err);
-                })
-                .on('end', () => {
-                    console.log(`[ffmpeg] ${pinyin}.mp4 finished`);
-                    resolve();
-                })
-                .save(`./result/mp4/${Math.ceil(counter / 1000)}/${pinyin}.mp4`)
-        });
+        pool_mp3.push({ pinyin, startTime, endTime })
     }
+    await asyncPool(poolLimit, pool_mp3, parseMp3)
+
+
     counter = 0
+    let parseMp4 = ({ pinyin, startTime, endTime }) => new Promise((resolve, reject) => {
+        ffmpeg('./original/howhow.mp4')
+            .setStartTime(startTime)
+            .setDuration(endTime - startTime)
+            .on('progress', (progress) => {
+                console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
+            })
+            .on('error', (err) => {
+                console.error(`[ffmpeg] error: ${err.message}`);
+                reject(err);
+            })
+            .on('end', () => {
+                console.log(`[ffmpeg] ${pinyin}.mp4 finished`);
+                resolve();
+            })
+            .save(`./result/mp4/${Math.ceil(counter / 1000)}/${pinyin}.mp4`)
+    });
+    let pool_mp4 = []
     for (let { pinyin, startTime, endTime } of res) {
         counter++
-        await new Promise((resolve, reject) => {
-            ffmpeg('./original/howhow.mp4')
-                .videoCodec('libvpx')
-                .audioCodec('libvorbis')
-                .setStartTime(startTime)
-                .setDuration(endTime - startTime)
-                .on('progress', (progress) => {
-                    console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
-                })
-                .on('error', (err) => {
-                    console.error(`[ffmpeg] error: ${err.message}`);
-                    reject(err);
-                })
-                .on('end', () => {
-                    console.log(`[ffmpeg] ${pinyin}.webm finished`);
-                    resolve();
-                })
-                .save(`./result/webm/${Math.ceil(counter / 1000)}/${pinyin}.webm`)
-        });
+        pool_mp4.push({ pinyin, startTime, endTime })
     }
+    await asyncPool(poolLimit, pool_mp4, parseMp4)
+
+    counter = 0
+    let parseWebm = ({ pinyin, startTime, endTime }) => new Promise((resolve, reject) => {
+        ffmpeg('./original/howhow.mp4')
+            .videoCodec('libvpx')
+            .audioCodec('libvorbis')
+            .setStartTime(startTime)
+            .setDuration(endTime - startTime)
+            .on('progress', (progress) => {
+                console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
+            })
+            .on('error', (err) => {
+                console.error(`[ffmpeg] error: ${err.message}`);
+                reject(err);
+            })
+            .on('end', () => {
+                console.log(`[ffmpeg] ${pinyin}.webm finished`);
+                resolve();
+            })
+            .save(`./result/webm/${Math.ceil(counter / 1000)}/${pinyin}.webm`)
+    });
+    let pool_webm = []
+    for (let { pinyin, startTime, endTime } of res) {
+        counter++
+        pool_webm.push({ pinyin, startTime, endTime })
+    }
+    await asyncPool(poolLimit, pool_webm, parseWebm)
 }
 main() 
