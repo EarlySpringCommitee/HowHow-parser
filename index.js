@@ -33,7 +33,7 @@ async function main() {
     rmdir('./result');
     for (let folder of ['./result',]) {
         fs.mkdirSync(folder);
-        for (let folder2 of ['/mp3/', '/mp4/', '/webm/']) {
+        for (let folder2 of ['/mp3/', '/mp4/']) {
             fs.mkdirSync(folder + folder2);
             for (let folder3 of [1, 2]) {
                 fs.mkdirSync(folder + folder2 + folder3);
@@ -72,12 +72,11 @@ async function main() {
 
     counter = 0
     let parseMp4 = ({ pinyin, startTime, endTime }) => new Promise((resolve, reject) => {
+        counter++
         ffmpeg('./original/howhow.mp4')
+            .outputOptions('-movflags frag_keyframe+empty_moov+default_base_moof')
             .setStartTime(startTime)
             .setDuration(endTime - startTime)
-            .on('progress', (progress) => {
-                console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
-            })
             .on('error', (err) => {
                 console.error(`[ffmpeg] error: ${err.message}`);
                 reject(err);
@@ -94,32 +93,5 @@ async function main() {
         pool_mp4.push({ pinyin, startTime, endTime })
     }
     await asyncPool(poolLimit, pool_mp4, parseMp4)
-
-    counter = 0
-    let parseWebm = ({ pinyin, startTime, endTime }) => new Promise((resolve, reject) => {
-        ffmpeg('./original/howhow.mp4')
-            .videoCodec('libvpx')
-            .audioCodec('libvorbis')
-            .setStartTime(startTime)
-            .setDuration(endTime - startTime)
-            .on('progress', (progress) => {
-                console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
-            })
-            .on('error', (err) => {
-                console.error(`[ffmpeg] error: ${err.message}`);
-                reject(err);
-            })
-            .on('end', () => {
-                console.log(`[ffmpeg] ${pinyin}.webm finished`);
-                resolve();
-            })
-            .save(`./result/webm/${Math.ceil(counter / 1000)}/${pinyin}.webm`)
-    });
-    let pool_webm = []
-    for (let { pinyin, startTime, endTime } of res) {
-        counter++
-        pool_webm.push({ pinyin, startTime, endTime })
-    }
-    await asyncPool(poolLimit, pool_webm, parseWebm)
 }
 main() 
