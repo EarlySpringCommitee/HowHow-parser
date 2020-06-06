@@ -45,7 +45,7 @@ async function main() {
 
 
     counter = 0
-    let parseMp3 = ({ pinyin, startTime, endTime }) => new Promise((resolve, reject) => {
+    let parseMp3 = ({ pinyin, startTime, endTime, counter }) => new Promise((resolve, reject) => {
         ffmpeg('./original/howhow.mp3')
             .setStartTime(startTime)
             .setDuration(endTime - startTime)
@@ -65,14 +65,13 @@ async function main() {
     let pool_mp3 = []
     for (let { pinyin, startTime, endTime } of res) {
         counter++
-        pool_mp3.push({ pinyin, startTime, endTime })
+        pool_mp3.push({ pinyin, startTime, endTime, counter })
     }
     await asyncPool(poolLimit, pool_mp3, parseMp3)
 
 
     counter = 0
-    let parseMp4 = ({ pinyin, startTime, endTime }) => new Promise((resolve, reject) => {
-        counter++
+    let parseMp4 = ({ pinyin, startTime, endTime, counter }) => new Promise((resolve, reject) => {
         ffmpeg('./original/howhow.mp4')
             .outputOptions('-movflags frag_keyframe+empty_moov+default_base_moof')
             .setStartTime(startTime)
@@ -90,7 +89,7 @@ async function main() {
     let pool_mp4 = []
     for (let { pinyin, startTime, endTime } of res) {
         counter++
-        pool_mp4.push({ pinyin, startTime, endTime })
+        pool_mp4.push({ pinyin, startTime, endTime, counter })
     }
     await asyncPool(poolLimit, pool_mp4, parseMp4)
 }
