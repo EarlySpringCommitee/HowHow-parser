@@ -31,7 +31,7 @@ async function main() {
     rmdir('./result');
     for (let folder of ['./result',]) {
         fs.mkdirSync(folder);
-        for (let folder2 of ['/mp3/', '/mp4/']) {
+        for (let folder2 of ['/mp3/', '/mp4/', '/webm/']) {
             fs.mkdirSync(folder + folder2);
             for (let folder3 of [1, 2]) {
                 fs.mkdirSync(folder + folder2 + folder3);
@@ -43,23 +43,68 @@ async function main() {
     counter = 0
     for (let { pinyin, startTime, endTime } of res) {
         counter++
-        ffmpeg('./original/howhow.mp3')
-            .setStartTime(startTime)
-            .setDuration(endTime - startTime)
-            //.output(`./result/mp3/${1}/${id}-${pinyin}.mp3`)
-            .output(`./result/mp3/${Math.ceil(counter / 1000)}/${pinyin}.mp3`)
-            .on('error', err => console.log('error: ', pinyin, err))
-            .run();
+
+        await new Promise((resolve, reject) => {
+            ffmpeg('./original/howhow.mp3')
+                .setStartTime(startTime)
+                .setDuration(endTime - startTime)
+                .on('progress', (progress) => {
+                    console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
+                })
+                .on('error', (err) => {
+                    console.error(`[ffmpeg] error: ${err.message}`);
+                    reject(err);
+                })
+                .on('end', () => {
+                    console.log(`[ffmpeg] ${pinyin}.mp3 finished`);
+                    resolve();
+                })
+                .save(`./result/mp3/${Math.ceil(counter / 1000)}/${pinyin}.mp3`)
+        });
     }
     counter = 0
     for (let { pinyin, startTime, endTime } of res) {
         counter++
-        ffmpeg('./original/howhow.mp4')
-            .setStartTime(startTime)
-            .setDuration(endTime - startTime)
-            .output(`./result/mp4/${Math.ceil(counter / 1000)}/${pinyin}.mp4`)
-            .on('error', err => console.log('error: ', pinyin, err))
-            .run();
+        await new Promise((resolve, reject) => {
+            ffmpeg('./original/howhow.mp4')
+                .setStartTime(startTime)
+                .setDuration(endTime - startTime)
+                .on('progress', (progress) => {
+                    console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
+                })
+                .on('error', (err) => {
+                    console.error(`[ffmpeg] error: ${err.message}`);
+                    reject(err);
+                })
+                .on('end', () => {
+                    console.log(`[ffmpeg] ${pinyin}.mp4 finished`);
+                    resolve();
+                })
+                .save(`./result/mp4/${Math.ceil(counter / 1000)}/${pinyin}.mp4`)
+        });
+    }
+    counter = 0
+    for (let { pinyin, startTime, endTime } of res) {
+        counter++
+        await new Promise((resolve, reject) => {
+            ffmpeg('./original/howhow.mp4')
+                .videoCodec('libvpx')
+                .audioCodec('libvorbis')
+                .setStartTime(startTime)
+                .setDuration(endTime - startTime)
+                .on('progress', (progress) => {
+                    console.log(`[ffmpeg] ${JSON.stringify(progress)}`);
+                })
+                .on('error', (err) => {
+                    console.error(`[ffmpeg] error: ${err.message}`);
+                    reject(err);
+                })
+                .on('end', () => {
+                    console.log(`[ffmpeg] ${pinyin}.webm finished`);
+                    resolve();
+                })
+                .save(`./result/webm/${Math.ceil(counter / 1000)}/${pinyin}.webm`)
+        });
     }
 }
 main() 
